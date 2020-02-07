@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"text/template"
 
 	"mattmeinzer.com/plants/pkg/models"
 )
@@ -22,24 +21,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/home.page.tmpl",
-		"./ui/html/base.layout.tmpl",
-		"./ui/html/footer.partial.tmpl",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	data := &templateData{Plants: p}
-	err = ts.Execute(w, data)
-
-	if err != nil {
-		app.serverError(w, err)
-	}
+	app.render(w, r, "home.page.tmpl", &templateData{
+		Plants: p,
+	})
 }
 
 func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
@@ -59,24 +43,9 @@ func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &templateData{Plant: plant}
-
-	files := []string{
-		"./ui/html/show.page.tmpl",
-		"./ui/html/base.layout.tmpl",
-		"./ui/html/footer.partial.tmpl",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	err = ts.Execute(w, data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	app.render(w, r, "show.page.tmpl", &templateData{
+		Plant: plant,
+	})
 }
 
 func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
