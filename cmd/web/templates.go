@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"path/filepath"
+	"time"
 
 	"mattmeinzer.com/plants/pkg/models"
 )
@@ -11,6 +12,14 @@ type templateData struct {
 	CurrentYear int
 	Plant       *models.Plant
 	Plants      []*models.Plant
+}
+
+func humanDate(t time.Time) string {
+	return t.Format("02 Jan 2006 at 15:04")
+}
+
+var functions = template.FuncMap{
+	"humanDate": humanDate,
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {
@@ -22,7 +31,9 @@ func newTemplateCache(dir string) (map[string]*template.Template, error) {
 	}
 
 	for _, page := range pages {
-		ts, err := template.ParseFiles(page)
+		name := filepath.Base(page)
+
+		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
 		if err != nil {
 			return nil, err
 		}
@@ -37,7 +48,6 @@ func newTemplateCache(dir string) (map[string]*template.Template, error) {
 			return nil, err
 		}
 
-		name := filepath.Base(page)
 		cache[name] = ts
 	}
 
