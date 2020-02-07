@@ -4,5 +4,20 @@
 
 {{define "main"}}
 <h2>Plants</h2>
+{{if .Plants}}
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Id</th>
+  </tr>
+  {{range .Plants}}
+  <tr>
+    <td>{{.Name}}</td>
+    <td>{{.ID}}</td>
+  </tr>
+  {{end}}
+</table>
+{{else}}
 <p>There's nothing to see here yet!</p>
+{{end}}
 {{end}}

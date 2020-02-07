@@ -1,0 +1,14 @@
+{{template "base" .}}
+
+{{define "title"}}Plant #{{.Plant.ID}}{{end}}
+
+{{define "main"}}
+<div class='snippet'>
+  <div class='metadata'>
+    {{with .Plant}}
+    <strong>{{.Name}}</strong>
+    <span>#{{.ID}}</span>
+    {{end}}
+  </div>
+</div>
+{{end}}

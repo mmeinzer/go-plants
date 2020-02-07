@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"text/template"
 
 	"mattmeinzer.com/plants/pkg/models"
 )
@@ -21,26 +22,24 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, plant := range p {
-		fmt.Fprintf(w, "%+v\n", plant)
+	files := []string{
+		"./ui/html/home.page.tmpl",
+		"./ui/html/base.layout.tmpl",
+		"./ui/html/footer.partial.tmpl",
 	}
 
-	// files := []string{
-	// 	"./ui/html/home.page.tmpl",
-	// 	"./ui/html/base.layout.tmpl",
-	// 	"./ui/html/footer.partial.tmpl",
-	// }
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-	// ts, err := template.ParseFiles(files...)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// 	return
-	// }
+	data := &templateData{Plants: p}
+	err = ts.Execute(w, data)
 
-	// err = ts.Execute(w, nil)
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// }
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +49,7 @@ func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p, err := app.plants.Get(id)
+	plant, err := app.plants.Get(id)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
 			app.notFound(w)
@@ -60,7 +59,24 @@ func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "%+v", p)
+	data := &templateData{Plant: plant}
+
+	files := []string{
+		"./ui/html/show.page.tmpl",
+		"./ui/html/base.layout.tmpl",
+		"./ui/html/footer.partial.tmpl",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	err = ts.Execute(w, data)
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
