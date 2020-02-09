@@ -6,7 +6,10 @@
 <form action='/plant/create' method='POST'>
   <div>
     <label>Name:</label>
-    <input type='text' name='name'>
+    {{with .FormErrors.name}}
+    <label class="error">{{.}}</label>
+    {{end}}
+    <input type='text' name='name' value='{{.FormData.Get "name"}}'>
   </div>
   <div>
     <input type='submit' value='Add plant'>
