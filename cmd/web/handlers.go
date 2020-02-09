@@ -10,11 +10,6 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		app.notFound(w)
-		return
-	}
-
 	p, err := app.plants.Top()
 	if err != nil {
 		app.serverError(w, err)
@@ -27,7 +22,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	id, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil || id < 1 {
 		app.notFound(w)
 		return
@@ -48,13 +43,11 @@ func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", http.MethodPost)
-		app.clientError(w, http.StatusMethodNotAllowed)
-		return
-	}
+func (app *application) createPlantForm(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Create plant form"))
+}
 
+func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
 	name := "Timothy" // FIXME - actually use the params
 
 	id, err := app.plants.Insert(name)
