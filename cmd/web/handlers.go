@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
+	"unicode/utf8"
 
 	"mattmeinzer.com/plants/pkg/models"
 )
@@ -54,6 +56,19 @@ func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
 	}
 
 	name := r.PostForm.Get("name")
+
+	errors := make(map[string]string)
+
+	if strings.TrimSpace(name) == "" {
+		errors["name"] = "This field cannot be blank"
+	} else if utf8.RuneCountInString(name) > 100 {
+		errors["name"] = "This field is too long (max 100 characters)"
+	}
+
+	if len(errors) > 0 {
+		fmt.Fprint(w, errors)
+		return
+	}
 
 	id, err := app.plants.Insert(name)
 	if err != nil {
