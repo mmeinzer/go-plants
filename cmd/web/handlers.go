@@ -44,11 +44,16 @@ func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) createPlantForm(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Create plant form"))
+	app.render(w, r, "create.page.tmpl", nil)
 }
 
 func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
-	name := "Timothy" // FIXME - actually use the params
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+	}
+
+	name := r.PostForm.Get("name")
 
 	id, err := app.plants.Insert(name)
 	if err != nil {
@@ -56,5 +61,5 @@ func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/plant?id=%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/plant/%d", id), http.StatusSeeOther)
 }

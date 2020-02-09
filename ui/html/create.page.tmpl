@@ -1,0 +1,15 @@
+{{template "base" .}}
+
+{{define "title"}}New Plant{{end}}
+
+{{define "main"}}
+<form action='/plant/create' method='POST'>
+  <div>
+    <label>Name:</label>
+    <input type='text' name='name'>
+  </div>
+  <div>
+    <input type='submit' value='Add plant'>
+  </div>
+</form>
+{{end}}
