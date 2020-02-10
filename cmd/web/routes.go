@@ -9,15 +9,18 @@ import (
 
 func (app *application) routes() http.Handler {
 	standardMiddleware := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
+	dynamicMiddleware := alice.New(app.session.Enable)
 
 	mux := pat.New()
 
-	mux.Get("/", http.HandlerFunc(app.home))
+	// Dynamic routes with sessions
+	mux.Get("/", dynamicMiddleware.ThenFunc(app.home))
 
-	mux.Get("/plant/create", http.HandlerFunc(app.createPlantForm))
-	mux.Post("/plant/create", http.HandlerFunc(app.createPlant))
-	mux.Get("/plant/:id", http.HandlerFunc(app.showPlant))
+	mux.Get("/plant/create", dynamicMiddleware.ThenFunc(app.createPlantForm))
+	mux.Post("/plant/create", dynamicMiddleware.ThenFunc(app.createPlant))
+	mux.Get("/plant/:id", dynamicMiddleware.ThenFunc(app.showPlant))
 
+	// Static file serving
 	fileServer := http.FileServer(http.Dir("./ui/static"))
 	mux.Get("/static/", http.StripPrefix("/static", fileServer))
 
