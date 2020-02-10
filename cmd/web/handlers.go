@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
-	"unicode/utf8"
 
+	"mattmeinzer.com/plants/pkg/forms"
 	"mattmeinzer.com/plants/pkg/models"
 )
 
@@ -46,34 +45,28 @@ func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) createPlantForm(w http.ResponseWriter, r *http.Request) {
-	app.render(w, r, "create.page.tmpl", nil)
+	app.render(w, r, "create.page.tmpl", &templateData{
+		Form: forms.New(nil),
+	})
 }
 
 func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
-	}
-
-	name := r.PostForm.Get("name")
-
-	errors := make(map[string]string)
-
-	if strings.TrimSpace(name) == "" {
-		errors["name"] = "This field cannot be blank"
-	} else if utf8.RuneCountInString(name) > 100 {
-		errors["name"] = "This field is too long (max 100 characters)"
-	}
-
-	if len(errors) > 0 {
-		app.render(w, r, "create.page.tmpl", &templateData{
-			FormErrors: errors,
-			FormData:   r.PostForm,
-		})
 		return
 	}
 
-	id, err := app.plants.Insert(name)
+	form := forms.New(r.PostForm)
+	form.Required("name")
+	form.MaxLength("name", 100)
+
+	if !form.Valid() {
+		app.render(w, r, "create.page.tmpl", &templateData{Form: form})
+		return
+	}
+
+	id, err := app.plants.Insert(form.Get("name"))
 	if err != nil {
 		app.serverError(w, err)
 		return

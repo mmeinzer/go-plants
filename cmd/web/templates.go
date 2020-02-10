@@ -2,17 +2,16 @@ package main
 
 import (
 	"html/template"
-	"net/url"
 	"path/filepath"
 	"time"
 
+	"mattmeinzer.com/plants/pkg/forms"
 	"mattmeinzer.com/plants/pkg/models"
 )
 
 type templateData struct {
 	CurrentYear int
-	FormData    url.Values
-	FormErrors  map[string]string
+	Form        *forms.Form
 	Plant       *models.Plant
 	Plants      []*models.Plant
 }

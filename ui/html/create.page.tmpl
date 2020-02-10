@@ -4,15 +4,17 @@
 
 {{define "main"}}
 <form action='/plant/create' method='POST'>
+  {{with .Form}}
   <div>
     <label>Name:</label>
-    {{with .FormErrors.name}}
+    {{with .Errors.Get "name"}}
     <label class="error">{{.}}</label>
     {{end}}
-    <input type='text' name='name' value='{{.FormData.Get "name"}}'>
+    <input type='text' name='name' value='{{.Get "name"}}'>
   </div>
   <div>
     <input type='submit' value='Add plant'>
   </div>
+  {{end}}
 </form>
 {{end}}
