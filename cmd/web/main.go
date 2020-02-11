@@ -21,6 +21,7 @@ type application struct {
 	infoLog       *log.Logger
 	plants        *postgres.PlantModel
 	templateCache map[string]*template.Template
+	users         *postgres.UserModel
 	session       *sessions.Session
 }
 
@@ -52,9 +53,10 @@ func main() {
 	app := &application{
 		errorLog:      errorLog,
 		infoLog:       infoLog,
-		session:       session,
 		plants:        &postgres.PlantModel{DB: db},
 		templateCache: templateCache,
+		users:         &postgres.UserModel{DB: db},
+		session:       session,
 	}
 
 	tlsConfig := &tls.Config{
