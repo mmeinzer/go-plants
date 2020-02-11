@@ -72,5 +72,7 @@ func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	app.session.Put(r, "flash", "Plant successfully added!")
+
 	http.Redirect(w, r, fmt.Sprintf("/plant/%d", id), http.StatusSeeOther)
 }

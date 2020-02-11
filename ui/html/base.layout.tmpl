@@ -19,6 +19,9 @@
     <a href='/plant/create'>Add a plant</a>
   </nav>
   <main>
+    {{with .Flash}}
+    <div class="flash">{{.}}</div>
+    {{end}}
     {{template "main" .}}
   </main>
   {{template "footer" .}}

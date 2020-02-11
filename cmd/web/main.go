@@ -27,7 +27,6 @@ func main() {
 	addr := flag.String("addr", ":8000", "HTTP network address")
 	dsn := flag.String("dsn", "host=localhost port=5432 user=postgres sslmode=disable dbname=goplants", "Postgres driver connection info")
 	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
-
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime|log.LUTC)
