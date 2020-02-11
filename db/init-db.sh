@@ -11,4 +11,15 @@ psql -v ON_ERROR_STOP=1 --dbname goplants <<-EOSQL
     id SERIAL PRIMARY KEY,
     name VARCHAR(100)
   );
+
+  CREATE TABLE users(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    hashed_password CHAR(60) NOT NULL,
+    created TIMESTAMP NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    CONSTRAINT users_uc_email UNIQUE (email)
+  );
 EOSQL
