@@ -2,7 +2,10 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 
+	"github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 	"mattmeinzer.com/plants/pkg/models"
 )
 
@@ -13,6 +16,24 @@ type UserModel struct {
 
 // Insert adds a new record to the users table.
 func (m *UserModel) Insert(name, email, password string) error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	if err != nil {
+		return err
+	}
+
+	stmt := "INSERT INTO users(name, email, hashed_password, created) VALUES($1, $2, $3, now())"
+
+	_, err = m.DB.Exec(stmt, name, email, string(hashedPassword))
+	if err != nil {
+		var pgError *pq.Error
+		if errors.As(err, &pgError) {
+			if pgError.Code.Name() == "unique_violation" {
+				return models.ErrDuplicateEmail
+			}
+		}
+		return err
+	}
+
 	return nil
 }
 
