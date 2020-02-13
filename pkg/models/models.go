@@ -12,6 +12,8 @@ var (
 	ErrInvalidCredentials = errors.New("models: invalid credentials")
 	// ErrDuplicateEmail means that a given email is already registered
 	ErrDuplicateEmail = errors.New("models: duplicate email")
+	// ErrNotActive means the user has the active flag set to false
+	ErrNotActive = errors.New("models: the user is no longer active")
 )
 
 // Plant model

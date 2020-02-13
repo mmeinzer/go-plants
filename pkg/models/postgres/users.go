@@ -39,17 +39,22 @@ func (m *UserModel) Insert(name, email, password string) error {
 
 // Authenticate verifies a user exists and credentials match
 func (m *UserModel) Authenticate(email, password string) (int, error) {
-	stmt := "SELECT id, hashed_password FROM users WHERE email = $1 AND active = TRUE"
+	stmt := "SELECT id, hashed_password, active FROM users WHERE email = $1"
 
 	var id int
 	var hashedPassword []byte
+	var active bool
 	row := m.DB.QueryRow(stmt, email)
-	err := row.Scan(&id, &hashedPassword)
+	err := row.Scan(&id, &hashedPassword, &active)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return 0, models.ErrInvalidCredentials
 		}
 		return 0, err
+	}
+
+	if !active {
+		return 0, models.ErrNotActive
 	}
 
 	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
@@ -65,5 +70,16 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 
 // Get method to fetch details for a specific user
 func (m *UserModel) Get(id int) (*models.User, error) {
-	return nil, nil
+	u := &models.User{}
+
+	stmt := "SELECT id, name, email, created, active FROM users WHERE id = $1"
+	err := m.DB.QueryRow(stmt, id).Scan(&u.ID, &u.Name, &u.Email, &u.Created, &u.Active)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		}
+		return nil, err
+	}
+
+	return u, nil
 }
