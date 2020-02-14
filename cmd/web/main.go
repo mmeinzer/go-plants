@@ -19,6 +19,7 @@ import (
 type contextKey string
 
 const contextKeyIsAuthenticated = contextKey("isAuthenticated")
+const contextKeyUserID = contextKey("userID")
 
 type application struct {
 	errorLog      *log.Logger

@@ -18,8 +18,9 @@ var (
 
 // Plant model
 type Plant struct {
-	ID   int
-	Name string
+	ID    int
+	Name  string
+	Owner User
 }
 
 // User model
@@ -30,4 +31,5 @@ type User struct {
 	HashedPassword []byte
 	Created        time.Time
 	Active         bool
+	Plants         []Plant
 }
