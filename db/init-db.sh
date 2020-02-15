@@ -7,11 +7,6 @@ psql -v ON_ERROR_STOP=1 <<-EOSQL
 EOSQL
 
 psql -v ON_ERROR_STOP=1 --dbname goplants <<-EOSQL
-  CREATE TABLE plants(
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
-  );
-
   CREATE TABLE users(
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -21,5 +16,12 @@ psql -v ON_ERROR_STOP=1 --dbname goplants <<-EOSQL
     active BOOLEAN NOT NULL DEFAULT TRUE,
 
     CONSTRAINT users_uc_email UNIQUE (email)
+  );
+
+  CREATE TABLE plants(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    owner INTEGER,
+    FOREIGN KEY (owner) REFERENCES users (id)
   );
 EOSQL

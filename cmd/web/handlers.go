@@ -51,6 +51,12 @@ func (app *application) createPlantForm(w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(contextKeyUserID).(int)
+	if !ok {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
 	err := r.ParseForm()
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
@@ -66,7 +72,7 @@ func (app *application) createPlant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := app.plants.Insert(form.Get("name"))
+	id, err := app.plants.Insert(userID, form.Get("name"))
 	if err != nil {
 		app.serverError(w, err)
 		return
