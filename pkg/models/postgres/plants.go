@@ -13,11 +13,11 @@ type PlantModel struct {
 }
 
 // Insert will insert a new snippet into the database
-func (m *PlantModel) Insert(owner int, name string) (int, error) {
+func (m *PlantModel) Insert(ownerID int, name string) (int, error) {
 	stmt := `INSERT INTO plants(name, owner) VALUES($1, $2) RETURNING id`
 
 	var id int
-	err := m.DB.QueryRow(stmt, name, owner).Scan(&id)
+	err := m.DB.QueryRow(stmt, name, ownerID).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
