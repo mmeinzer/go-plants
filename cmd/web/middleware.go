@@ -35,7 +35,8 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		user, err := app.users.Get(app.session.GetInt(r, "authenticatedUserID"))
+		userID := app.session.GetInt(r, "authenticatedUserID")
+		user, err := app.users.Get(userID)
 		if errors.Is(err, models.ErrNoRecord) || !user.Active {
 			app.session.Remove(r, "authenticatedUserID")
 			next.ServeHTTP(w, r)
@@ -46,6 +47,8 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), contextKeyIsAuthenticated, true)
+		ctx = context.WithValue(ctx, contextKeyUserID, userID)
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
