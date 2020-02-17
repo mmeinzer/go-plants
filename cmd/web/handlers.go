@@ -11,7 +11,13 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	p, err := app.plants.Top()
+	userID, ok := r.Context().Value(contextKeyUserID).(int)
+	if !ok {
+		app.render(w, r, "home.page.tmpl", &templateData{})
+		return
+	}
+
+	p, err := app.plants.Top(userID)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -153,7 +159,7 @@ func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
 
 	app.session.Put(r, "authenticatedUserID", id)
 
-	http.Redirect(w, r, "/plant/create", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (app *application) logoutUser(w http.ResponseWriter, r *http.Request) {

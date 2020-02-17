@@ -41,10 +41,10 @@ func (m *PlantModel) Get(id int) (*models.Plant, error) {
 }
 
 // Top will return 10 of the users plants
-func (m *PlantModel) Top() ([]*models.Plant, error) {
-	stmt := `SELECT id, name FROM plants ORDER BY id DESC LIMIT 10`
+func (m *PlantModel) Top(ownerID int) ([]*models.Plant, error) {
+	stmt := `SELECT id, name FROM plants WHERE owner = $1 ORDER BY id DESC LIMIT 10`
 
-	rows, err := m.DB.Query(stmt)
+	rows, err := m.DB.Query(stmt, ownerID)
 	if err != nil {
 		return nil, err
 	}
