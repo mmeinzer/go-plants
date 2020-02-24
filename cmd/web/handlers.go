@@ -22,6 +22,10 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func ping(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("OK"))
+}
+
 func (app *application) showPlant(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get(":id"))
 	if err != nil || id < 1 {
