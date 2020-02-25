@@ -16,6 +16,9 @@ func (app *application) routes() http.Handler {
 	// Dynamic routes with sessions
 	mux.Get("/", dynamicMiddleware.ThenFunc(app.home))
 
+	// Health Check
+	mux.Get("/ping", http.HandlerFunc(ping))
+
 	// Plants
 	mux.Get("/plant/create", dynamicMiddleware.Append(app.requireAuthentication).ThenFunc(app.createPlantForm))
 	mux.Post("/plant/create", dynamicMiddleware.Append(app.requireAuthentication).ThenFunc(app.createPlant))
